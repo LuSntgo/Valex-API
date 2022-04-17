@@ -28,13 +28,3 @@ export async function getCardBalance(req: Request, res: Response) {
   const totalBalance = await cardService.getBalance(Number(id));
   res.send(totalBalance);
 }
-
-export async function rechargeCard(req: Request, res: Response) {
-  const { id } = req.params;
-  const { amount } = req.body;
-  const apiKey = req.headers["x-api-key"].toString();
-
-  const idNumber: number = parseInt(id);
-  await cardService.rechargeCard(idNumber, amount, apiKey);
-  res.sendStatus(201);
-}

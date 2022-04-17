@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { rechargeCard } from "../controllers/cardsController.js";
+import { rechargeCard } from "../controllers/rechargeController.js";
 import {validateSchema} from "../middlewares/validateSchemaMiddleware.js"
 import rechargeSchema from "../schemas/schemasRecharge.js";
 
