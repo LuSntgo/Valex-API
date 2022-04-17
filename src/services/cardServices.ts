@@ -14,8 +14,6 @@ export async function createCard(
   employeeId: number,
   type: cardRepository.TransactionTypes
 ) {
-  await companyService.companyCheck(apiKey);
-
   const employee = await employeeRepository.findById(employeeId);
   if (!employee) {
     throw { type: "not_found", message: "Employee not exist" };
@@ -31,6 +29,7 @@ export async function createCard(
   const cardName = await cardUtils.formatCardName(employee.fullName);
 
   const card = await cardUtils.formatCreditCard(employee.id, cardName, type);
+  console.log(card);
   await cardRepository.insert(card);
 }
 
@@ -143,7 +142,7 @@ export async function purchaseCard(
       message: "Insuficient balance",
     };
   }
-  await paymentRepository.insert({cardId, businessId, amount})
+  await paymentRepository.insert({ cardId, businessId, amount });
 }
 
 export function checkPassword(password: string, hashPassword: string) {
