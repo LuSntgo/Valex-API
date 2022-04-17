@@ -6,4 +6,3 @@ export async function companyCheck(apiKey: string) {
     throw { type: "not_found", message: "Company not exist" };
   }
 }
-
