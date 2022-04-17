@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as cardController from "../controllers/cardsController.js";
 import schemaCard from "../schemas/schemasCards.js";
+import schemaActive from "../schemas/schemasActivate.js";
 import { validateSchema } from "../middlewares/validateSchemaMiddleware.js";
 import { validateApiKey } from "../middlewares/validateApiKeyMiddleware.js";
 
@@ -12,7 +13,7 @@ cardRouter.post(
   validateApiKey,
   cardController.postCard
 );
-cardRouter.put("/cards/:id/activate", validateSchema(schemaCard));
+cardRouter.put("/cards/:id/activate", validateSchema(schemaActive), validateApiKey, cardController.activateCard);
 cardRouter.get("/cards/:id");
 
 export default cardRouter;
