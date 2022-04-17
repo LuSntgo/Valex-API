@@ -1,11 +1,12 @@
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
-import { Card } from "../repositories/cardRepository.js";
+
 import * as companyService from "./companyService.js";
 import * as cardRepository from "../repositories/cardRepository.js";
 import * as employeeRepository from "../repositories/employeeRepository.js";
 import * as paymentRepository from "../repositories/paymentRepository.js";
 import * as rechargeRepository from "../repositories/rechargeRepository.js";
+import * as businessRepository from "../repositories/businessRepository.js";
 import * as cardUtils from "../utils/cardUtils.js";
 
 export async function createCard(
@@ -112,4 +113,41 @@ export async function rechargeCard(
   expirationDate(card.expirationDate);
 
   await rechargeRepository.insert({ cardId, amount });
+}
+
+export async function purchaseCard(
+  cardId: number,
+  businessId: number,
+  password: string,
+  amount: number
+) {
+  const card = await registeredCard(cardId);
+  expirationDate(card.expirationDate);
+  checkPassword(password, card.password);
+  const business = await businessRepository.findById(businessId);
+
+  if (!business) {
+    throw { type: "not_found", message: "business doesn't exist" };
+  }
+
+  if (business.type !== card.type) {
+    throw {
+      type: "error_conflict",
+      message: "Business and Card type doesn't match",
+    };
+  }
+  const cardBalance = await getBalance(cardId);
+  if (cardBalance.balance < amount) {
+    throw {
+      type: "forbidden",
+      message: "Insuficient balance",
+    };
+  }
+  await paymentRepository.insert({cardId, businessId, amount})
+}
+
+export function checkPassword(password: string, hashPassword: string) {
+  if (!bcrypt.compareSync(password, hashPassword)) {
+    throw { type: "forbidden", message: "password doesn't match" };
+  }
 }
