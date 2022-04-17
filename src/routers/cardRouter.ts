@@ -12,5 +12,7 @@ cardRouter.post(
   validateApiKey,
   cardController.postCard
 );
+cardRouter.put("/cards/:id/activate", validateSchema(schemaCard));
+cardRouter.get("/cards/:id");
 
 export default cardRouter;
