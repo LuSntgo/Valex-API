@@ -5,7 +5,7 @@ import * as companyService from "./companyService.js";
 import * as cardRepository from "../repositories/cardRepository.js";
 import * as employeeRepository from "../repositories/employeeRepository.js";
 import * as paymentRepository from "../repositories/paymentRepository.js";
-import * as recahargeRepository from "../repositories/rechargeRepository.js";
+import * as rechargeRepository from "../repositories/rechargeRepository.js";
 import * as cardUtils from "../utils/cardUtils.js";
 
 export async function createCard(
@@ -75,4 +75,41 @@ export function expirationDate(cardDate: string) {
   if (expirationDate.diff(today, "month") > 0) {
     throw { type: "forbidden", message: "Card expired" };
   }
+}
+
+export async function getBalance(cardId: number) {
+  await registeredCard(cardId);
+
+  const transactions = await paymentRepository.findByCardId(cardId);
+  const recharges = await rechargeRepository.findByCardId(cardId);
+
+  const totalTransactions: number = calculateTotal(transactions);
+  const totalRecharges: number = calculateTotal(recharges);
+
+  return {
+    balance: totalRecharges - totalTransactions,
+    transactions,
+    recharges,
+  };
+}
+
+export function calculateTotal(list: any) {
+  let totalAmount: number = list.reduce(
+    (sum: number, amount: number) => sum + amount,
+    0
+  );
+
+  return totalAmount;
+}
+
+export async function rechargeCard(
+  cardId: number,
+  amount: number,
+  apiKey: string
+) {
+  await companyService.companyCheck(apiKey);
+  const card = await registeredCard(cardId);
+  expirationDate(card.expirationDate);
+
+  await rechargeRepository.insert({ cardId, amount });
 }

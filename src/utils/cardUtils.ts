@@ -46,3 +46,4 @@ export async function verifyCardType(
 ) {
   return cardRepository.findByTypeAndEmployeeId(type, employeeId);
 }
+
