@@ -5,7 +5,5 @@
     "moduleResolution": "node",
     "outDir": "dist"
   },
-  "ts-node": {
-    "esm": true
-  }
+  "ts-node": { "esm": true }
 }

@@ -13,25 +13,22 @@ export async function createCard(
   employeeId: number,
   type: cardRepository.TransactionTypes
 ) {
+  //   await companyService.companyCheck(apiKey);
 
-    //   await companyService.companyCheck(apiKey);
+  const employee = await employeeRepository.findById(employeeId);
+  if (!employee) {
+    throw { type: "not_found", message: "Employee not exist" };
+  }
+  const existingCard = await cardUtils.verifyCardType(employeeId, type);
+  if (existingCard) {
+    throw {
+      erro_type: "conflict_error",
+      message: "Card type already in use",
+    };
+  }
 
-    const employee = await employeeRepository.findById(employeeId);
-    if (!employee) {
-      throw { type: "not_found", message: "Employee not exist" };
-    }
-    const existingCard = await cardUtils.verifyCardType(employeeId, type);
-    if (existingCard) {
-      throw {
-        erro_type: "conflict_error",
-        message: "Card type already in use",
-      };
-    }
+  const cardName = await cardUtils.formatCardName(employee.fullName);
 
-      const cardName = await cardUtils.formatCardName(employee.fullName);
-
-      const card:any =  await cardUtils.formatCreditCard(employee.id, cardName, type);
-      console.log(card);
-     await cardRepository.insert(card);
-
+  const card = await cardUtils.formatCreditCard(employee.id, cardName, type);
+  await cardRepository.insert(card);
 }

@@ -22,9 +22,7 @@ export async function formatCreditCard(
   type: cardRepository.TransactionTypes
 ) {
   let numberCard = faker.faker.finance.creditCardNumber("mastercard");
-  if (!numberCard) {
-    return numberCard;
-  }
+
   const CVV = faker.faker.finance.creditCardCVV();
 
   const card: cardRepository.CardInsertData = {
