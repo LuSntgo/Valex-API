@@ -26,9 +26,10 @@ export async function formatCreditCard(
     return numberCard;
   }
   const CVV = faker.faker.finance.creditCardCVV();
+
   const card: cardRepository.CardInsertData = {
-    employeeId,
     number: numberCard,
+    employeeId,
     cardholderName: cardName,
     securityCode: bcrypt.hashSync(CVV, 10),
     expirationDate: dayjs(Date.now()).add(5, "year").format("MM/YY"),
@@ -45,6 +46,5 @@ export async function verifyCardType(
   employeeId: number,
   type: cardRepository.TransactionTypes
 ) {
-  const existingCard = cardRepository.findByTypeAndEmployeeId(type, employeeId);
-  return existingCard;
+  return cardRepository.findByTypeAndEmployeeId(type, employeeId);
 }

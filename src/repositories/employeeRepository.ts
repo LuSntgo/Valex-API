@@ -13,6 +13,5 @@ export async function findById(id: number) {
     "SELECT * FROM employees WHERE id=$1",
     [id]
   );
-
   return result.rows[0];
 }

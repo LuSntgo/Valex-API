@@ -1,6 +1,6 @@
-import * as faker from "@faker-js/faker";
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
+import { Card } from "../repositories/cardRepository.js";
 import * as companyService from "./companyService.js";
 import * as cardRepository from "../repositories/cardRepository.js";
 import * as employeeRepository from "../repositories/employeeRepository.js";
@@ -13,18 +13,25 @@ export async function createCard(
   employeeId: number,
   type: cardRepository.TransactionTypes
 ) {
-  ////A chave de API deve ser possuida por alguma empresa
-  await companyService.companyCheck(apiKey);
 
-  ////Somente empregados cadastrados devem possuir cartões
-  const employee = await employeeRepository.findById(employeeId);
-  if (!employee) {
-    throw { type: "not_found", message: "employee not exist" };
-  }
+    //   await companyService.companyCheck(apiKey);
 
-  ////////  Empregados não podem possuir mais de um cartão do mesmo tipo
-  const existingCard = await cardUtils.verifyCardType(employeeId, type);
-  if (existingCard)
-    throw { erro_type: "conflict_error", message: "Card type already in use" };
+    const employee = await employeeRepository.findById(employeeId);
+    if (!employee) {
+      throw { type: "not_found", message: "Employee not exist" };
+    }
+    const existingCard = await cardUtils.verifyCardType(employeeId, type);
+    if (existingCard) {
+      throw {
+        erro_type: "conflict_error",
+        message: "Card type already in use",
+      };
+    }
+
+      const cardName = await cardUtils.formatCardName(employee.fullName);
+
+      const card:any =  await cardUtils.formatCreditCard(employee.id, cardName, type);
+      console.log(card);
+     await cardRepository.insert(card);
+
 }
-//!Fim
