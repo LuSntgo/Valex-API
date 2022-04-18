@@ -25,6 +25,7 @@ export async function formatCreditCard(
 
   const CVV = faker.faker.finance.creditCardCVV();
 
+
   const card: cardRepository.CardInsertData = {
     number: numberCard,
     employeeId,

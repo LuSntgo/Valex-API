@@ -29,7 +29,7 @@ export async function createCard(
   const cardName = await cardUtils.formatCardName(employee.fullName);
 
   const card = await cardUtils.formatCreditCard(employee.id, cardName, type);
-  console.log(card);
+  // console.log(card);
   await cardRepository.insert(card);
 }
 
@@ -78,26 +78,31 @@ export function expirationDate(cardDate: string) {
 }
 
 export async function getBalance(cardId: number) {
-  await registeredCard(cardId);
+  try {
+    await registeredCard(cardId);
 
-  const transactions = await paymentRepository.findByCardId(cardId);
-  const recharges = await rechargeRepository.findByCardId(cardId);
+    const transactions = await paymentRepository.findByCardId(cardId);
+    const recharges = await rechargeRepository.findByCardId(cardId);
 
-  const totalTransactions: number = calculateTotal(transactions);
-  const totalRecharges: number = calculateTotal(recharges);
-
-  return {
-    balance: totalRecharges - totalTransactions,
-    transactions,
-    recharges,
-  };
+    const totalTransactions: number = calculateTotal(transactions);
+    const totalRecharges: number = calculateTotal(recharges);
+    // console.log(transactions);
+    // console.log(recharges);
+    return {
+      balance: totalRecharges - totalTransactions,
+      transactions,
+      recharges,
+    };
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export function calculateTotal(list: any) {
-  let totalAmount: number = list.reduce(
-    (sum: number, amount: number) => sum + amount,
-    0
-  );
+  let totalAmount: number = list.reduce((amount: number, sum: any) => {
+    console.log(sum);
+    return sum.amount + amount;
+  }, 0);
 
   return totalAmount;
 }
@@ -107,11 +112,15 @@ export async function rechargeCard(
   amount: number,
   apiKey: string
 ) {
-  await companyService.companyCheck(apiKey);
-  const card = await registeredCard(cardId);
-  expirationDate(card.expirationDate);
+  try {
+    await companyService.companyCheck(apiKey);
+    const card = await registeredCard(cardId);
+    expirationDate(card.expirationDate);
 
-  await rechargeRepository.insert({ cardId, amount });
+    await rechargeRepository.insert({ cardId, amount });
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export async function purchaseCard(
@@ -121,6 +130,7 @@ export async function purchaseCard(
   amount: number
 ) {
   const card = await registeredCard(cardId);
+
   expirationDate(card.expirationDate);
   checkPassword(password, card.password);
   const business = await businessRepository.findById(businessId);

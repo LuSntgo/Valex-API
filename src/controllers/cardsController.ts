@@ -12,6 +12,8 @@ export async function postCard(req: Request, res: Response) {
     if (err?.erro_type === "conflict_error") {
       return res.sendStatus(409);
     }
+    console.log(err);
+    res.sendStatus(500);
   }
 }
 
@@ -19,13 +21,22 @@ export async function activateCard(req: Request, res: Response) {
   const { id } = req.params;
   const { securityCode, password } = req.body;
   const idNumber: number = parseInt(id);
-  await cardService.activateCard(idNumber, securityCode, password);
-  res.sendStatus(201);
+  try {
+    await cardService.activateCard(idNumber, securityCode, password);
+    res.sendStatus(201);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 }
 
 export async function getCardBalance(req: Request, res: Response) {
   const { id } = req.params;
-
-  const totalBalance = await cardService.getBalance(Number(id));
-  res.send(totalBalance);
+  try {
+    const totalBalance = await cardService.getBalance(Number(id));
+    res.send(totalBalance);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 }
