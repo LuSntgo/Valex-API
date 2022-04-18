@@ -30,7 +30,7 @@ export async function formatCreditCard(
     number: numberCard,
     employeeId,
     cardholderName: cardName,
-    securityCode: bcrypt.hashSync(CVV, 10),
+    securityCode: CVV,
     expirationDate: dayjs(Date.now()).add(5, "year").format("MM/YY"),
     password: null,
     isVirtual: false,

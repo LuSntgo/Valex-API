@@ -48,7 +48,7 @@ export async function activateCard(
   }
 
   expirationDate(card.expirationDate);
-  if (!bcrypt.compareSync(securityCode, card.securityCode)) {
+  if (securityCode !== card.securityCode) {
     throw { type: "forbidden", message: "Security code don't match" };
   }
 
