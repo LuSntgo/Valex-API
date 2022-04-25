@@ -7,4 +7,4 @@ const rechargeRouter = Router();
 
 rechargeRouter.post("/recharge/cards/:id", validateSchema(rechargeSchema), rechargeCard)
 
-export default rechargeRouter
+export default rechargeRouter;
